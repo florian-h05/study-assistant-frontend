@@ -81,7 +81,7 @@ function renderTable(): void {
   }
 
   main.innerHTML = `
-    <div class="docs-table-wrapper">
+    <div class="docs-table-wrapper m3-surface">
       <table class="docs-table">
         <thead>
           <tr id="header-row">
@@ -177,7 +177,7 @@ function renderFilterSelect(col: FilterKey, isDate = false): string {
   const currentVals = filters[col] || [];
 
   return `
-    <select class="column-filter" data-col="${col}" multiple size="1">
+    <select class="column-filter m3-input" data-col="${col}" multiple size="1">
       <option value="all" ${currentVals.length === 0 ? "selected" : ""}>All</option>
       ${options
         .map((opt) => {

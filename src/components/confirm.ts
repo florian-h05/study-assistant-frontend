@@ -1,12 +1,14 @@
 export function showConfirm(message: string): Promise<boolean> {
   return new Promise((resolve) => {
     const dialog = document.createElement("dialog");
-    dialog.className = "confirm-dialog";
+    dialog.className = "confirm-dialog m3-modal";
     dialog.innerHTML = `
-      <p class="confirm-dialog__message"></p>
-      <div class="confirm-dialog__actions">
-        <button class="btn btn--danger" data-action="confirm">Delete</button>
+      <div class="modal__body" style="padding-top: 24px;">
+        <p class="confirm-dialog__message" style="margin: 0;"></p>
+      </div>
+      <div class="modal__footer">
         <button class="btn btn--ghost" data-action="cancel">Cancel</button>
+        <button class="btn btn--danger" data-action="confirm">Delete</button>
       </div>
     `;
     dialog.querySelector(".confirm-dialog__message")!.textContent = message;

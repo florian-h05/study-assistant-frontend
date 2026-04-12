@@ -46,7 +46,7 @@ export function openSettings(): void {
 
 function injectDialog(): void {
   dialog = document.createElement("dialog");
-  dialog.className = "modal";
+  dialog.className = "modal m3-modal";
   dialog.id = "settings-modal";
   dialog.innerHTML = `
     <div class="modal__header">
@@ -56,12 +56,12 @@ function injectDialog(): void {
     <div class="modal__body">
       <div class="form-group">
         <label for="settings-url">n8n Server URL</label>
-        <input type="url" id="settings-url" placeholder="https://n8n.example.com" required>
+        <input type="url" id="settings-url" class="m3-input" placeholder="https://n8n.example.com" required>
       </div>
       <div class="form-group">
         <label for="settings-token">Bearer Token</label>
         <div style="display: flex; gap: 8px;">
-          <input type="password" id="settings-token" style="flex: 1; min-width: 0;" required>
+          <input type="password" id="settings-token" class="m3-input" style="flex: 1; min-width: 0;" required>
           <button type="button" class="btn btn--ghost" id="toggle-token" style="width: 72px;">Show</button>
         </div>
       </div>

@@ -19,7 +19,7 @@ export function openUploadModal(): void {
 
 function injectDialog(): void {
   dialog = document.createElement("dialog");
-  dialog.className = "modal";
+  dialog.className = "modal m3-modal";
   dialog.id = "upload-modal";
   dialog.innerHTML = `
     <div class="modal__header">
@@ -30,7 +30,7 @@ function injectDialog(): void {
       <div class="modal__body">
         <div class="form-group">
           <label for="doc-type">Document Type</label>
-          <select id="doc-type" required>
+          <select id="doc-type" class="m3-input" required>
             <option value="lecture">Lecture</option>
             <option value="exercise">Exercise</option>
             <option value="assignment">Assignment</option>
@@ -40,31 +40,31 @@ function injectDialog(): void {
 
         <div class="form-group">
           <label for="course-name">Course Name</label>
-          <input type="text" id="course-name" required placeholder="e.g. Operating Systems">
+          <input type="text" id="course-name" class="m3-input" required placeholder="e.g. Operating Systems">
         </div>
 
         <div style="display: flex; gap: 16px;">
           <div class="form-group" style="flex: 1;">
             <label for="term">Term</label>
-            <select id="term" required>
+            <select id="term" class="m3-input" required>
               <option value="winter">Winter</option>
               <option value="summer">Summer</option>
             </select>
           </div>
           <div class="form-group" style="flex: 1;">
             <label for="year">Year</label>
-            <input type="number" id="year" required min="2000">
+            <input type="number" id="year" class="m3-input" required min="2000">
           </div>
         </div>
 
         <div class="form-group" id="chapter-group">
           <label for="chapter-name">Chapter Name</label>
-          <input type="text" id="chapter-name">
+          <input type="text" id="chapter-name" class="m3-input">
         </div>
 
         <div class="form-group" id="label-group" style="display: none;">
           <label for="label">Label</label>
-          <input type="text" id="label">
+          <input type="text" id="label" class="m3-input">
         </div>
 
         <div class="form-group">
