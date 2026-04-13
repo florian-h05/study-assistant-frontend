@@ -1,4 +1,10 @@
-import { ErrorCodes, type Config, type Doc, type IngestPayload } from "./types";
+import {
+  ErrorCodes,
+  type Config,
+  type Doc,
+  type IngestPayload,
+  type SummaryResponse,
+} from "./types";
 
 const CONFIG_KEY = "study_assistant_config";
 
@@ -59,7 +65,7 @@ export async function getDocs(config?: Config): Promise<Doc[]> {
 // TODO: Either only use IngestPayload or remove it
 export async function ingestDoc(
   payload: IngestPayload | FormData,
-): Promise<void> {
+): Promise<Doc> {
   let body: BodyInit;
   let headers: Record<string, string> = {};
 
@@ -71,11 +77,12 @@ export async function ingestDoc(
     headers["Content-Type"] = "application/json";
   }
 
-  await apiFetch("study-assistant-doc", {
+  const res = await apiFetch("study-assistant-doc", {
     method: "POST",
     headers,
     body,
   });
+  return res.json() as Promise<Doc>;
 }
 
 export async function deleteDoc(id: number): Promise<void> {
@@ -89,10 +96,11 @@ export async function deleteDoc(id: number): Promise<void> {
 export async function triggerSummary(
   course: string,
   chapter: string,
-): Promise<void> {
-  await apiFetch("study-assistant-summary", {
+): Promise<SummaryResponse> {
+  const res = await apiFetch("study-assistant-summary", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ course, chapter }),
   });
+  return res.json() as Promise<SummaryResponse>;
 }
