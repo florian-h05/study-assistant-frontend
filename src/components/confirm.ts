@@ -1,14 +1,29 @@
-export function showConfirm(message: string): Promise<boolean> {
+export type ConfirmType = "danger" | "success";
+
+export function showConfirm(
+  message: string,
+  options: {
+    confirmText?: string;
+    cancelText?: string;
+    type?: ConfirmType;
+  } = {},
+): Promise<boolean> {
+  const {
+    confirmText = "Confirm",
+    cancelText = "Cancel",
+    type = "danger",
+  } = options;
+
   return new Promise((resolve) => {
     const dialog = document.createElement("dialog");
-    dialog.className = "confirm-dialog m3-modal";
+    dialog.className = "m3-modal";
     dialog.innerHTML = `
       <div class="modal__body" style="padding-top: 24px;">
         <p class="confirm-dialog__message" style="margin: 0;"></p>
       </div>
       <div class="modal__footer">
-        <button class="btn btn--ghost" data-action="cancel">Cancel</button>
-        <button class="btn btn--danger" data-action="confirm">Delete</button>
+        <button class="btn btn--ghost" data-action="cancel">${cancelText}</button>
+        <button class="btn btn--${type}" data-action="confirm">${confirmText}</button>
       </div>
     `;
     dialog.querySelector(".confirm-dialog__message")!.textContent = message;
