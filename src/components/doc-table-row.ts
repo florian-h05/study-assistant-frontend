@@ -3,6 +3,7 @@ import { createBadge, type BadgeColour } from "./badge";
 import { showSpinner, hideSpinner } from "./spinner";
 import { showToast } from "./toast";
 import { showConfirm } from "./confirm";
+import { Modal } from "./modal";
 import { capitalizeFirstLetter } from "../utils";
 import type { Doc, DocType, DocGroup } from "../types";
 
@@ -76,14 +77,65 @@ export function renderTableRow(
         { confirmText: "Approve", type: "success" },
       );
       if (confirmed) {
+        showToast(
+          `Generating summary for ${group.course_name}: ${group.chapter_name}...`,
+          "info",
+        );
+        showSpinner();
         try {
-          await triggerSummary(group.course_name, group.chapter_name || "");
-          showToast(
-            `Summary generation started for ${group.course_name}: ${group.chapter_name}`,
-            "info",
+          const result = await triggerSummary(
+            group.course_name,
+            group.chapter_name!,
           );
+
+          showToast("Summary generated!", "success");
+
+          const summaryModal = new Modal({
+            title: result.title,
+            className: "m3-modal--wide",
+            body: `
+              <div class="summary-content">${result.summary}</div>
+              <div class="summary-tokens">
+                <span>Input Tokens: ${result.tokens.input}</span>
+                <span>Output Tokens: ${result.tokens.output}</span>
+              </div>
+            `,
+            footer: `
+              <button type="button" class="btn btn--ghost" id="download-summary-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download (.md)
+              </button>
+              <button type="button" class="btn btn--primary" data-modal-action="close">Done</button>
+            `,
+          });
+          summaryModal.open();
+
+          const downloadBtn = summaryModal.querySelector(
+            "#download-summary-btn",
+          ) as HTMLButtonElement;
+          downloadBtn.onclick = () => {
+            const content = `# ${result.title}
+            
+            - Generated: ${result.timestamp}
+            - Input Tokens: ${result.tokens.input}
+            - Output Tokens: ${result.tokens.output}
+
+            ${result.summary}`;
+
+            const blob = new Blob([content], { type: "text/markdown" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${result.title.replace(/[/\\?%*:|"<>]/g, "-")}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          };
         } catch (err) {
           showToast((err as Error).message, "error");
+        } finally {
+          hideSpinner();
         }
       }
     };

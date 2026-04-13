@@ -5,6 +5,7 @@ export interface ModalOptions {
   onClose?: () => void;
   beforeClose?: () => boolean | Promise<boolean>;
   id?: string;
+  className?: string;
   wrapInForm?: boolean;
   formId?: string;
 }
@@ -17,7 +18,7 @@ export class Modal {
   constructor(options: ModalOptions) {
     this.options = options;
     this.element = document.createElement("div");
-    this.element.className = "m3-modal";
+    this.element.className = `m3-modal ${options.className || ""}`.trim();
     if (options.id) this.element.id = options.id;
 
     this.onKeyDownBound = this.onKeyDown.bind(this);
