@@ -1,8 +1,9 @@
 import { getConfig, saveConfig, getDocs } from "../api";
 import { showToast } from "../components/toast";
+import { Modal } from "../components/modal";
 import { ErrorCodes } from "../types";
 
-let dialog: HTMLDivElement;
+let modal: Modal;
 let onSaveCallback: () => void;
 
 export function initSettings(onSave: () => void): void {
@@ -28,49 +29,27 @@ export function openSettings(): void {
     /* ignore */
   }
 
-  const urlInput = dialog.querySelector<HTMLInputElement>("#settings-url")!;
-  const tokenInput = dialog.querySelector<HTMLInputElement>("#settings-token")!;
+  const urlInput = modal.querySelector<HTMLInputElement>("#settings-url")!;
+  const tokenInput = modal.querySelector<HTMLInputElement>("#settings-token")!;
 
   urlInput.value = config.serverUrl;
   tokenInput.value = config.token;
   tokenInput.type = "password";
 
-  const toggleBtn = dialog.querySelector<HTMLButtonElement>("#toggle-token")!;
+  const toggleBtn = modal.querySelector<HTMLButtonElement>("#toggle-token")!;
   toggleBtn.textContent = "Show";
 
-  const resultEl = dialog.querySelector("#settings-test-result")!;
+  const resultEl = modal.querySelector("#settings-test-result")!;
   resultEl.textContent = "";
 
-  document.getElementById("modal-root")!.appendChild(dialog);
-  window.addEventListener("keydown", onKeyDown);
-}
-
-function closeSettingsModal(): void {
-  window.removeEventListener("keydown", onKeyDown);
-  dialog.remove();
-}
-
-function onKeyDown(e: KeyboardEvent): void {
-  if (e.key === "Escape") {
-    try {
-      getConfig();
-      closeSettingsModal();
-    } catch {
-      showToast("Please configure settings first.", "error");
-    }
-  }
+  modal.open();
 }
 
 function injectDialog(): void {
-  dialog = document.createElement("div");
-  dialog.className = "m3-modal";
-  dialog.id = "settings-modal";
-  dialog.innerHTML = `
-    <div class="modal__header">
-      <h2 class="modal__title">Settings</h2>
-      <button class="btn btn--icon" id="settings-close" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal__body">
+  modal = new Modal({
+    title: "Settings",
+    id: "settings-modal",
+    body: `
       <div class="form-group">
         <label for="settings-url">n8n Server URL</label>
         <input type="url" id="settings-url" class="m3-input" placeholder="https://n8n.example.com" required>
@@ -83,25 +62,25 @@ function injectDialog(): void {
         </div>
       </div>
       <div id="settings-test-result" class="result-message"></div>
-    </div>
-    <div class="modal__footer">
+    `,
+    footer: `
       <button class="btn btn--ghost" id="settings-test">Test connection</button>
       <button class="btn btn--primary" id="settings-save">Save Settings</button>
-    </div>
-  `;
-
-  dialog.querySelector("#settings-close")!.addEventListener("click", () => {
-    try {
-      getConfig();
-      closeSettingsModal();
-    } catch {
-      showToast("Please configure settings first.", "error");
-    }
+    `,
+    beforeClose: () => {
+      try {
+        getConfig();
+        return true;
+      } catch {
+        showToast("Please configure settings first.", "error");
+        return false;
+      }
+    },
   });
 
-  dialog.querySelector("#toggle-token")!.addEventListener("click", (e) => {
+  modal.querySelector("#toggle-token")!.addEventListener("click", (e) => {
     const btn = e.currentTarget as HTMLButtonElement;
-    const input = dialog.querySelector<HTMLInputElement>("#settings-token")!;
+    const input = modal.querySelector<HTMLInputElement>("#settings-token")!;
     if (input.type === "password") {
       input.type = "text";
       btn.textContent = "Hide";
@@ -111,43 +90,39 @@ function injectDialog(): void {
     }
   });
 
-  dialog
-    .querySelector("#settings-test")!
-    .addEventListener("click", async () => {
-      const url = dialog
-        .querySelector<HTMLInputElement>("#settings-url")!
-        .value.replace(/\/$/, "");
-      const token =
-        dialog.querySelector<HTMLInputElement>("#settings-token")!.value;
-      const resultEl = dialog.querySelector<HTMLElement>(
-        "#settings-test-result",
-      )!;
-
-      if (!url || !token) {
-        resultEl.textContent = "\u2716 Please fill in both fields.";
-        resultEl.style.color = "var(--md-sys-color-error)";
-        return;
-      }
-
-      resultEl.textContent = "Testing...";
-      resultEl.style.color = "var(--md-sys-color-on-surface-variant)";
-
-      try {
-        await getDocs({ serverUrl: url, token });
-        resultEl.textContent = "\u279C Connection successful!";
-        resultEl.style.color = "var(--md-sys-color-success)";
-      } catch (err) {
-        resultEl.textContent = `\u2716 Error: ${(err as Error).message}`;
-        resultEl.style.color = "var(--md-sys-color-error)";
-      }
-    });
-
-  dialog.querySelector("#settings-save")!.addEventListener("click", () => {
-    const serverUrl = dialog
+  modal.querySelector("#settings-test")!.addEventListener("click", async () => {
+    const url = modal
       .querySelector<HTMLInputElement>("#settings-url")!
       .value.replace(/\/$/, "");
     const token =
-      dialog.querySelector<HTMLInputElement>("#settings-token")!.value;
+      modal.querySelector<HTMLInputElement>("#settings-token")!.value;
+    const resultEl = modal.querySelector<HTMLElement>("#settings-test-result")!;
+
+    if (!url || !token) {
+      resultEl.textContent = "\u2716 Please fill in both fields.";
+      resultEl.style.color = "var(--md-sys-color-error)";
+      return;
+    }
+
+    resultEl.textContent = "Testing...";
+    resultEl.style.color = "var(--md-sys-color-on-surface-variant)";
+
+    try {
+      await getDocs({ serverUrl: url, token });
+      resultEl.textContent = "\u279C Connection successful!";
+      resultEl.style.color = "var(--md-sys-color-success)";
+    } catch (err) {
+      resultEl.textContent = `\u2716 Error: ${(err as Error).message}`;
+      resultEl.style.color = "var(--md-sys-color-error)";
+    }
+  });
+
+  modal.querySelector("#settings-save")!.addEventListener("click", () => {
+    const serverUrl = modal
+      .querySelector<HTMLInputElement>("#settings-url")!
+      .value.replace(/\/$/, "");
+    const token =
+      modal.querySelector<HTMLInputElement>("#settings-token")!.value;
 
     if (!serverUrl || !token) {
       showToast("Please fill in all fields.", "error");
@@ -155,7 +130,7 @@ function injectDialog(): void {
     }
 
     saveConfig({ serverUrl, token });
-    closeSettingsModal();
+    modal.close();
     onSaveCallback();
   });
 }
