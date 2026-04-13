@@ -62,6 +62,7 @@ export function renderTableRow(
 
   // Actions
   const tdActions = document.createElement("td");
+  tdActions.className = "actions";
   tdActions.style.whiteSpace = "nowrap";
 
   if (group.doc_type === "lecture") {

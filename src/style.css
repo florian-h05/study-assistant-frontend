@@ -289,7 +289,11 @@ main {
   background: rgba(103, 80, 164, 0.04);
 }
 .docs-table td.pages,
-.docs-table td.uploaded {
+.docs-table td.uploaded,
+.docs-table td.actions,
+.docs-table th.pages,
+.docs-table th.uploaded,
+.docs-table th.actions {
   text-align: center;
 }
 .docs-table th.pages {

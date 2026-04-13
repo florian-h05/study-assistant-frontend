@@ -92,7 +92,7 @@ function renderTable(): void {
             <th data-col="chapter_label" class="sortable">Chapter / Label ${renderSortIcon("chapter_label")}</th>
             <th data-col="num_pages" class="sortable pages">Pages ${renderSortIcon("num_pages")}</th>
             <th data-col="created_at" class="sortable uploaded">Uploaded ${renderSortIcon("created_at")}</th>
-            <th>Actions</th>
+            <th class="actions">Actions</th>
           </tr>
           <tr class="filter-row">
             <th>${renderFilterSelect("course_name")}</th>
