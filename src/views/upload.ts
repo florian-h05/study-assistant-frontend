@@ -19,7 +19,7 @@ export function openUploadModal(): void {
 
 function injectDialog(): void {
   dialog = document.createElement("dialog");
-  dialog.className = "modal m3-modal";
+  dialog.className = "m3-modal";
   dialog.id = "upload-modal";
   dialog.innerHTML = `
     <div class="modal__header">

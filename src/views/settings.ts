@@ -46,7 +46,7 @@ export function openSettings(): void {
 
 function injectDialog(): void {
   dialog = document.createElement("dialog");
-  dialog.className = "modal m3-modal";
+  dialog.className = "m3-modal";
   dialog.id = "settings-modal";
   dialog.innerHTML = `
     <div class="modal__header">
