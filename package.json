@@ -9,6 +9,8 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit"
   },
+  "author": "Florian Hotze",
+  "license": "MIT",
   "devDependencies": {
     "@parcel/optimizer-htmlnano": "^2.16.4",
     "parcel": "^2.16.4",
