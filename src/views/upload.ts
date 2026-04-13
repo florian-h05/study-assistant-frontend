@@ -3,7 +3,7 @@ import { showSpinner, hideSpinner } from "../components/spinner";
 import { showToast } from "../components/toast";
 import type { DocType, Term, IngestPayload } from "../types";
 
-let dialog: HTMLDialogElement;
+let dialog: HTMLDivElement;
 let onSuccessCallback: () => void;
 let selectedFile: File | null = null;
 
@@ -14,11 +14,23 @@ export function initUploadModal(onSuccess: () => void): void {
 
 export function openUploadModal(): void {
   resetForm();
-  dialog.showModal();
+  document.getElementById("modal-root")!.appendChild(dialog);
+  window.addEventListener("keydown", onKeyDown);
+}
+
+function closeUploadModal(): void {
+  window.removeEventListener("keydown", onKeyDown);
+  dialog.remove();
+}
+
+function onKeyDown(e: KeyboardEvent): void {
+  if (e.key === "Escape") {
+    closeUploadModal();
+  }
 }
 
 function injectDialog(): void {
-  dialog = document.createElement("dialog");
+  dialog = document.createElement("div");
   dialog.className = "m3-modal";
   dialog.id = "upload-modal";
   dialog.innerHTML = `
@@ -87,8 +99,6 @@ function injectDialog(): void {
     </form>
   `;
 
-  document.getElementById("modal-root")!.appendChild(dialog);
-
   const form = dialog.querySelector("#upload-form") as HTMLFormElement;
   const docTypeSelect = dialog.querySelector("#doc-type") as HTMLSelectElement;
   const chapterGroup = dialog.querySelector("#chapter-group") as HTMLElement;
@@ -144,15 +154,15 @@ function injectDialog(): void {
 
   dialog
     .querySelector("#upload-close")!
-    .addEventListener("click", () => dialog.close());
+    .addEventListener("click", () => closeUploadModal());
   dialog
     .querySelector("#upload-cancel")!
-    .addEventListener("click", () => dialog.close());
+    .addEventListener("click", () => closeUploadModal());
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (await validateAndSubmit()) {
-      dialog.close();
+      closeUploadModal();
       onSuccessCallback();
     }
   });

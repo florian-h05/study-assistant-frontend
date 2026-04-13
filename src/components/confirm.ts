@@ -15,7 +15,7 @@ export function showConfirm(
   } = options;
 
   return new Promise((resolve) => {
-    const dialog = document.createElement("dialog");
+    const dialog = document.createElement("div");
     dialog.className = "m3-modal";
     dialog.innerHTML = `
       <div class="modal__body" style="padding-top: 24px;">
@@ -28,22 +28,27 @@ export function showConfirm(
     `;
     dialog.querySelector(".confirm-dialog__message")!.textContent = message;
 
+    const cleanup = (value: boolean) => {
+      window.removeEventListener("keydown", onKeyDown);
+      dialog.remove();
+      resolve(value);
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        cleanup(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
     dialog
       .querySelector('[data-action="confirm"]')!
-      .addEventListener("click", () => {
-        dialog.close();
-        dialog.remove();
-        resolve(true);
-      });
+      .addEventListener("click", () => cleanup(true));
     dialog
       .querySelector('[data-action="cancel"]')!
-      .addEventListener("click", () => {
-        dialog.close();
-        dialog.remove();
-        resolve(false);
-      });
+      .addEventListener("click", () => cleanup(false));
 
     document.getElementById("modal-root")!.appendChild(dialog);
-    dialog.showModal();
   });
 }

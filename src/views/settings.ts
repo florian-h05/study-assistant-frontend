@@ -2,7 +2,7 @@ import { getConfig, saveConfig, getDocs } from "../api";
 import { showToast } from "../components/toast";
 import { ErrorCodes } from "../types";
 
-let dialog: HTMLDialogElement;
+let dialog: HTMLDivElement;
 let onSaveCallback: () => void;
 
 export function initSettings(onSave: () => void): void {
@@ -41,11 +41,28 @@ export function openSettings(): void {
   const resultEl = dialog.querySelector("#settings-test-result")!;
   resultEl.textContent = "";
 
-  dialog.showModal();
+  document.getElementById("modal-root")!.appendChild(dialog);
+  window.addEventListener("keydown", onKeyDown);
+}
+
+function closeSettingsModal(): void {
+  window.removeEventListener("keydown", onKeyDown);
+  dialog.remove();
+}
+
+function onKeyDown(e: KeyboardEvent): void {
+  if (e.key === "Escape") {
+    try {
+      getConfig();
+      closeSettingsModal();
+    } catch {
+      showToast("Please configure settings first.", "error");
+    }
+  }
 }
 
 function injectDialog(): void {
-  dialog = document.createElement("dialog");
+  dialog = document.createElement("div");
   dialog.className = "m3-modal";
   dialog.id = "settings-modal";
   dialog.innerHTML = `
@@ -73,12 +90,10 @@ function injectDialog(): void {
     </div>
   `;
 
-  document.getElementById("modal-root")!.appendChild(dialog);
-
   dialog.querySelector("#settings-close")!.addEventListener("click", () => {
     try {
       getConfig();
-      dialog.close();
+      closeSettingsModal();
     } catch {
       showToast("Please configure settings first.", "error");
     }
@@ -140,16 +155,7 @@ function injectDialog(): void {
     }
 
     saveConfig({ serverUrl, token });
-    dialog.close();
+    closeSettingsModal();
     onSaveCallback();
-  });
-
-  dialog.addEventListener("cancel", (e) => {
-    try {
-      getConfig();
-    } catch {
-      e.preventDefault();
-      showToast("Please configure settings first.", "error");
-    }
   });
 }

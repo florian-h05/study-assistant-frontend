@@ -1,14 +1,14 @@
-let overlay: HTMLElement | null = null;
-
 export function showSpinner(): void {
-  if (overlay) return;
-  overlay = document.createElement("div");
-  overlay.className = "spinner-overlay";
-  overlay.innerHTML = '<div class="spinner"></div>';
-  document.getElementById("spinner-root")!.appendChild(overlay);
+  const root = document.getElementById("spinner-root")!;
+  if (root.classList.contains("active")) return;
+  root.innerHTML = '<div class="spinner"></div>';
+  root.classList.add("active");
 }
 
 export function hideSpinner(): void {
-  overlay?.remove();
-  overlay = null;
+  const root = document.getElementById("spinner-root")!;
+  if (root.classList.contains("active")) {
+    root.classList.remove("active");
+    root.innerHTML = "";
+  }
 }
