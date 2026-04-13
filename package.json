@@ -3,10 +3,12 @@
   "private": true,
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html --dist-dir dist",
+    "prebuild": "rm -rf dist",
+    "build": "parcel build src/index.html --dist-dir dist --public-url ./ --no-source-maps --detailed-report",
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@parcel/optimizer-htmlnano": "^2.16.4",
     "parcel": "^2.16.4",
     "prettier": "^3.8.2",
     "typescript": "^6.0.2"
