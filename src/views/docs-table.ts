@@ -2,6 +2,7 @@ import { getDocs } from "../api";
 import { showSpinner, hideSpinner } from "../components/spinner";
 import { renderToolbar } from "../components/toolbar";
 import { renderTableRow } from "../components/doc-table-row";
+import { capitalizeFirstLetter } from "../utils";
 import type { Doc } from "../types";
 
 let allDocs: Doc[] = [];
@@ -181,7 +182,10 @@ function renderFilterSelect(col: FilterKey, isDate = false): string {
       <option value="all" ${currentVals.length === 0 ? "selected" : ""}>All</option>
       ${options
         .map((opt) => {
-          const display = isDate ? new Date(opt).toLocaleDateString() : opt;
+          let display = isDate ? new Date(opt).toLocaleDateString() : opt;
+          if (col === "doc_type" || col === "term_year") {
+            display = capitalizeFirstLetter(display);
+          }
           return `<option value="${opt}" ${currentVals.includes(opt) ? "selected" : ""}>${display}</option>`;
         })
         .join("")}

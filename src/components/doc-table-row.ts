@@ -3,6 +3,7 @@ import { createBadge, type BadgeColour } from "./badge";
 import { showSpinner, hideSpinner } from "./spinner";
 import { showToast } from "./toast";
 import { showConfirm } from "./confirm";
+import { capitalizeFirstLetter } from "../utils";
 import type { Doc, DocType } from "../types";
 
 const TYPE_COLOURS: Record<DocType, BadgeColour> = {
@@ -11,11 +12,6 @@ const TYPE_COLOURS: Record<DocType, BadgeColour> = {
   assignment: "amber",
   exam: "coral",
 };
-
-function capitalizeFirstLetter(str: string): string {
-  if (!str) return str;
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 export function renderTableRow(
   doc: Doc,
@@ -73,14 +69,14 @@ export function renderTableRow(
         { confirmText: "Approve", type: "success" },
       );
       if (confirmed) {
-      try {
-        await triggerSummary(doc.course_name, doc.chapter_name || "");
-        showToast(
+        try {
+          await triggerSummary(doc.course_name, doc.chapter_name || "");
+          showToast(
             `Summary generation started for ${doc.course_name}: ${doc.chapter_name}`,
-          "info",
-        );
-      } catch (err) {
-        showToast((err as Error).message, "error");
+            "info",
+          );
+        } catch (err) {
+          showToast((err as Error).message, "error");
         }
       }
     };
