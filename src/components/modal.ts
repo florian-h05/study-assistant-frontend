@@ -12,6 +12,7 @@ export interface ModalOptions {
 
 export class Modal {
   public element: HTMLDivElement;
+  private backdrop: HTMLDivElement | null = null;
   private options: ModalOptions;
   private onKeyDownBound: (e: KeyboardEvent) => void;
 
@@ -58,7 +59,10 @@ export class Modal {
   public open(): void {
     const root = document.getElementById("modal-root");
     if (root) {
-      root.appendChild(this.element);
+      this.backdrop = document.createElement("div");
+      this.backdrop.className = "modal-backdrop";
+      this.backdrop.appendChild(this.element);
+      root.appendChild(this.backdrop);
       window.addEventListener("keydown", this.onKeyDownBound);
     }
   }
@@ -70,7 +74,8 @@ export class Modal {
     }
 
     window.removeEventListener("keydown", this.onKeyDownBound);
-    this.element.remove();
+    this.backdrop?.remove();
+    this.backdrop = null;
     if (this.options.onClose) {
       this.options.onClose();
     }

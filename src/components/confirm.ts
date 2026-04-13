@@ -15,6 +15,9 @@ export function showConfirm(
   } = options;
 
   return new Promise((resolve) => {
+    const backdrop = document.createElement("div");
+    backdrop.className = "modal-backdrop";
+
     const dialog = document.createElement("div");
     dialog.className = "m3-modal";
     dialog.innerHTML = `
@@ -27,10 +30,11 @@ export function showConfirm(
       </div>
     `;
     dialog.querySelector(".confirm-dialog__message")!.textContent = message;
+    backdrop.appendChild(dialog);
 
     const cleanup = (value: boolean) => {
       window.removeEventListener("keydown", onKeyDown);
-      dialog.remove();
+      backdrop.remove();
       resolve(value);
     };
 
@@ -49,6 +53,6 @@ export function showConfirm(
       .querySelector('[data-action="cancel"]')!
       .addEventListener("click", () => cleanup(false));
 
-    document.getElementById("modal-root")!.appendChild(dialog);
+    document.getElementById("modal-root")!.appendChild(backdrop);
   });
 }

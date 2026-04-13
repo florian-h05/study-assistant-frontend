@@ -479,7 +479,20 @@ main {
   color: var(--md-sys-color-on-surface-variant);
 }
 
-#modal-root,
+#modal-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+#modal-root:not(:empty) {
+  height: 100%;
+}
+
 #spinner-root {
   position: fixed;
   top: 0;
@@ -490,9 +503,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#spinner-root {
   z-index: 3000;
 }
 
@@ -519,14 +529,17 @@ main {
   pointer-events: none;
 }
 
-#modal-root {
-  z-index: 1000;
-}
-
-#modal-root:not(:empty) {
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  pointer-events: auto;
   background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
 }
 
 .toast {
