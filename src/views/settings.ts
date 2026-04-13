@@ -104,7 +104,9 @@ function injectDialog(): void {
         .value.replace(/\/$/, "");
       const token =
         dialog.querySelector<HTMLInputElement>("#settings-token")!.value;
-      const resultEl = dialog.querySelector("#settings-test-result")!;
+      const resultEl = dialog.querySelector<HTMLElement>(
+        "#settings-test-result",
+      )!;
 
       if (!url || !token) {
         resultEl.textContent = "\u2716 Please fill in both fields.";

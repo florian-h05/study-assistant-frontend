@@ -3,9 +3,11 @@
   "private": true,
   "scripts": {
     "dev": "parcel src/index.html",
-    "prebuild": "rm -rf dist",
+    "prebuild": "npm run format:check && npm run typecheck && rm -rf dist",
     "build": "parcel build src/index.html --dist-dir dist --public-url ./ --no-source-maps --detailed-report",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@parcel/optimizer-htmlnano": "^2.16.4",
