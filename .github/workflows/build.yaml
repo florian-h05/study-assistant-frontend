@@ -90,7 +90,7 @@ jobs:
         run: zip -r dist-${{ github.ref_name }}.zip dist
 
       - name: Publish GitHub Release
-        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
         with:
           files: |
             dist-${{ github.ref_name }}.tar.gz
