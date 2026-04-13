@@ -280,8 +280,17 @@ main {
 .docs-table tr:hover td {
   background: rgba(103, 80, 164, 0.04);
 }
+.docs-table td.pages,
+.docs-table td.uploaded {
+  text-align: center;
+}
+.docs-table th.pages {
+  width: 80px;
+}
+.docs-table th.uploaded {
+  width: 140px;
+}
 .docs-table td.pages {
-  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 

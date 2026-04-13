@@ -52,6 +52,7 @@ export function renderTableRow(
 
   // Uploaded Timestamp
   const tdUploaded = document.createElement("td");
+  tdUploaded.className = "uploaded";
   tdUploaded.textContent = new Date(doc.created_at).toLocaleDateString();
   tr.appendChild(tdUploaded);
 
