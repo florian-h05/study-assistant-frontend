@@ -3,7 +3,7 @@ import { showSpinner, hideSpinner } from "../components/spinner";
 import { renderToolbar } from "../components/toolbar";
 import { renderTableRow } from "../components/doc-table-row";
 import { capitalizeFirstLetter } from "../utils";
-import type { Doc } from "../types";
+import type { Doc, DocGroup } from "../types";
 
 let allDocs: Doc[] = [];
 
@@ -216,8 +216,48 @@ function updateTableRows(): void {
     });
   });
 
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--md-sys-color-on-surface-variant);">No documents match your filters.</td></tr>`;
+    return;
+  }
+
+  // Grouping logic
+  const groups: DocGroup[] = [];
+  filtered.forEach((doc) => {
+    const existing = groups.find(
+      (g) =>
+        g.course_name === doc.course_name &&
+        g.doc_type === doc.doc_type &&
+        g.term === doc.term &&
+        g.year === doc.year &&
+        g.chapter_name === doc.chapter_name &&
+        g.label === doc.label,
+    );
+
+    if (existing) {
+      existing.docs.push(doc);
+      existing.total_pages += doc.num_pages;
+      if (new Date(doc.created_at) > new Date(existing.latest_upload)) {
+        existing.latest_upload = doc.created_at;
+      }
+    } else {
+      groups.push({
+        course_name: doc.course_name,
+        doc_type: doc.doc_type,
+        term: doc.term,
+        year: doc.year,
+        chapter_name: doc.chapter_name,
+        label: doc.label,
+        docs: [doc],
+        total_pages: doc.num_pages,
+        latest_upload: doc.created_at,
+      });
+    }
+  });
+
+  // Sorting groups
   if (sortConfig.column) {
-    filtered.sort((a, b) => {
+    groups.sort((a, b) => {
       let valA: any, valB: any;
       if (sortConfig.column === "term_year") {
         valA = `${a.term} ${a.year}`;
@@ -225,9 +265,15 @@ function updateTableRows(): void {
       } else if (sortConfig.column === "chapter_label") {
         valA = a.chapter_name || a.label || "";
         valB = b.chapter_name || b.label || "";
+      } else if (sortConfig.column === "created_at") {
+        valA = a.latest_upload;
+        valB = b.latest_upload;
+      } else if (sortConfig.column === "num_pages") {
+        valA = a.total_pages;
+        valB = b.total_pages;
       } else {
-        valA = a[sortConfig.column as keyof Doc] ?? "";
-        valB = b[sortConfig.column as keyof Doc] ?? "";
+        valA = (a as any)[sortConfig.column as string] ?? "";
+        valB = (b as any)[sortConfig.column as string] ?? "";
       }
       if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
       if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
@@ -235,13 +281,8 @@ function updateTableRows(): void {
     });
   }
 
-  if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 32px; color: var(--md-sys-color-on-surface-variant);">No documents match your filters.</td></tr>`;
-    return;
-  }
-
   tbody.innerHTML = "";
-  filtered.forEach((doc) => {
-    tbody.appendChild(renderTableRow(doc, refreshDocsTable));
+  groups.forEach((group) => {
+    tbody.appendChild(renderTableRow(group, refreshDocsTable));
   });
 }

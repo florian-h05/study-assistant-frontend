@@ -35,3 +35,15 @@ export interface IngestPayload {
   label?: string; // required when type is assignment
   file: string; // base64-encoded PDF, no data-URI prefix
 }
+
+export interface DocGroup {
+  course_name: string;
+  doc_type: DocType;
+  term: Term;
+  year: number;
+  chapter_name: string | null;
+  label: string | null;
+  docs: Doc[];
+  total_pages: number;
+  latest_upload: string;
+}
