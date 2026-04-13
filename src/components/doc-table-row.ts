@@ -66,6 +66,14 @@ export function renderTableRow(
   tdActions.className = "actions";
   tdActions.style.whiteSpace = "nowrap";
 
+  // Info Button
+  const infoBtn = document.createElement("button");
+  infoBtn.className = "btn btn--icon";
+  infoBtn.title = "View details";
+  infoBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`;
+  infoBtn.onclick = () => showInfoModal(group, onRefresh);
+  tdActions.appendChild(infoBtn);
+
   if (group.doc_type === "lecture") {
     const summaryBtn = document.createElement("button");
     summaryBtn.className = "btn btn--icon";
@@ -209,4 +217,78 @@ function createDeleteBtn(id: number, onRefresh: () => void): HTMLButtonElement {
     }
   };
   return deleteBtn;
+}
+
+function showInfoModal(group: DocGroup, onRefresh: () => void): void {
+  const isGroup = group.docs.length > 1;
+  const title = `${group.course_name}: ${group.chapter_name || group.label || capitalizeFirstLetter(group.term) + " " + group.year} - ${isGroup ? "Group" : "Document"} Details`;
+
+  const renderDocRow = (doc: Doc) => `
+    <tr>
+      ${isGroup ? `<td class="seq">${doc.pdf_sequence ?? "-"}</td>` : ""}
+      <td>${new Date(doc.created_at).toLocaleString()}</td>
+      <td class="pages">${doc.num_pages}</td>
+      <td class="tokens">${doc.metadata.tokens.input}</td>
+      <td class="tokens">${doc.metadata.tokens.output}</td>
+      <td class="actions">
+        <button class="btn btn--icon btn--delete-doc" data-id="${doc.id}" title="Delete document" style="color: var(--md-sys-color-error);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </button>
+      </td>
+    </tr>
+  `;
+
+  const body = `
+    <div class="info-table-wrapper m3-surface">
+      <table class="info-table">
+        <thead>
+          <tr>
+            ${isGroup ? '<th class="seq">Seq</th>' : ""}
+            <th>Uploaded</th>
+            <th class="pages">Pages</th>
+            <th class="tokens">Input Tokens</th>
+            <th class="tokens">Output Tokens</th>
+            <th class="actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${group.docs.map(renderDocRow).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const modal = new Modal({
+    title,
+    body,
+    className: "m3-modal--wide",
+    footer: `<button type="button" class="btn btn--primary" data-modal-action="close">Done</button>`,
+  });
+
+  modal.open();
+
+  // Add click listeners for individual delete buttons
+  modal.element.querySelectorAll(".btn--delete-doc").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = parseInt(btn.getAttribute("data-id")!);
+      const confirmed = await showConfirm(
+        "Delete this document? This cannot be undone.",
+        { confirmText: "Delete", type: "danger" },
+      );
+
+      if (confirmed) {
+        showSpinner();
+        try {
+          await deleteDoc(id);
+          showToast("Document deleted", "success");
+          modal.close();
+          onRefresh();
+        } catch (err) {
+          showToast((err as Error).message, "error");
+        } finally {
+          hideSpinner();
+        }
+      }
+    });
+  });
 }
