@@ -45,15 +45,12 @@ export class Modal {
     this.element.innerHTML = content;
 
     this.element
-      .querySelector('[data-modal-action="close"]')!
-      .addEventListener("click", () => this.close());
+      .querySelectorAll('[data-modal-action="close"]')
+      .forEach((btn) => btn.addEventListener("click", () => this.close()));
 
-    const cancelBtn = this.element.querySelector(
-      '[data-modal-action="cancel"]',
-    );
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => this.close());
-    }
+    this.element
+      .querySelectorAll('[data-modal-action="cancel"]')
+      .forEach((btn) => btn.addEventListener("click", () => this.close()));
   }
 
   public open(): void {
