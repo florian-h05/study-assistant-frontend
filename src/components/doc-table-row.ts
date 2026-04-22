@@ -4,7 +4,7 @@ import { showSpinner, hideSpinner } from "./spinner";
 import { showToast } from "./toast";
 import { showConfirm } from "./confirm";
 import { Modal } from "./modal";
-import { capitalizeFirstLetter } from "../utils";
+import { capitalizeFirstLetter, formatTermYear } from "../utils";
 import type { Doc, DocType, DocGroup } from "../types";
 
 const TYPE_COLOURS: Record<DocType, BadgeColour> = {
@@ -37,7 +37,7 @@ export function renderTableRow(
 
   // Term / Year
   const tdTermYear = document.createElement("td");
-  tdTermYear.textContent = `${capitalizeFirstLetter(group.term)} ${group.year}`;
+  tdTermYear.textContent = formatTermYear(group.term, group.year);
   tr.appendChild(tdTermYear);
 
   // Chapter / Label
@@ -221,7 +221,7 @@ function createDeleteBtn(id: number, onRefresh: () => void): HTMLButtonElement {
 
 function showInfoModal(group: DocGroup, onRefresh: () => void): void {
   const isGroup = group.docs.length > 1;
-  const title = `${group.course_name}: ${group.chapter_name || group.label || capitalizeFirstLetter(group.term) + " " + group.year} - ${isGroup ? "Group" : "Document"} Details`;
+  const title = `${group.course_name}: ${group.chapter_name || group.label || formatTermYear(group.term, group.year)} - ${isGroup ? "Group" : "Document"} Details`;
 
   const renderDocRow = (doc: Doc) => `
     <tr>

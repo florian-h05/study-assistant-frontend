@@ -2,7 +2,7 @@ import { getDocs } from "../api";
 import { showSpinner, hideSpinner } from "../components/spinner";
 import { renderToolbar } from "../components/toolbar";
 import { renderTableRow } from "../components/doc-table-row";
-import { capitalizeFirstLetter } from "../utils";
+import { capitalizeFirstLetter, formatTermYear } from "../utils";
 import type { Doc, DocGroup } from "../types";
 
 let allDocs: Doc[] = [];
@@ -49,7 +49,7 @@ function getUniqueValues(key: FilterKey): string[] {
   const values = new Set<string>();
   allDocs.forEach((doc) => {
     if (key === "term_year") {
-      values.add(`${doc.term} ${doc.year}`);
+      values.add(formatTermYear(doc.term, doc.year));
     } else if (key === "chapter_label") {
       const val = doc.chapter_name || doc.label;
       if (val) values.add(val);
@@ -202,7 +202,7 @@ function updateTableRows(): void {
       if (!values || values.length === 0) return true;
       let docVal: string;
       if (key === "term_year") {
-        docVal = `${doc.term} ${doc.year}`;
+        docVal = formatTermYear(doc.term, doc.year);
       } else if (key === "chapter_label") {
         docVal = doc.chapter_name || doc.label || "";
       } else if (key === "num_pages") {
@@ -260,8 +260,16 @@ function updateTableRows(): void {
     groups.sort((a, b) => {
       let valA: any, valB: any;
       if (sortConfig.column === "term_year") {
-        valA = `${a.term} ${a.year}`;
-        valB = `${b.term} ${b.year}`;
+        // Chronological sort: Year first, then Term (Winter < Summer)
+        // Winter 2024 (starts Oct 2024) comes before Summer 2025 (starts Apr 2025)
+        if (a.year !== b.year) {
+          valA = a.year;
+          valB = b.year;
+        } else {
+          // Same calendar year: Summer (starts April) < Winter (starts October)
+          valA = a.term === "summer" ? 0 : 1;
+          valB = b.term === "summer" ? 0 : 1;
+        }
       } else if (sortConfig.column === "chapter_label") {
         valA = a.chapter_name || a.label || "";
         valB = b.chapter_name || b.label || "";
