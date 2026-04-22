@@ -18,12 +18,14 @@ See [src/api.ts](src/api.ts) for the `apiFetch` implementation.
 Handles retrieving, uploading, and deleting documents.
 
 #### Get All Documents
+
 - **Path**: `study-assistant-doc`
 - **Method**: `GET`
 - **Response**: `Doc[]`
 - **Reference**: `getDocs()` in [src/api.ts](src/api.ts)
 
 #### Upload Document
+
 - **Path**: `study-assistant-doc`
 - **Method**: `POST`
 - **Request Body**: `IngestPayload` (JSON) or `FormData`
@@ -31,6 +33,7 @@ Handles retrieving, uploading, and deleting documents.
 - **Reference**: `ingestDoc()` in [src/api.ts](src/api.ts)
 
 #### Delete Document
+
 - **Path**: `study-assistant-doc`
 - **Method**: `DELETE`
 - **Request Body**: `{ id: number }` (JSON)
@@ -42,6 +45,7 @@ Handles retrieving, uploading, and deleting documents.
 Triggers a summary generation for a specific course and chapter.
 
 #### Trigger Summary
+
 - **Path**: `study-assistant-summary`
 - **Method**: `POST`
 - **Request Body**: `{ course: string, chapter: string }` (JSON)
@@ -55,50 +59,54 @@ Triggers a summary generation for a specific course and chapter.
 The following types are defined in [src/types.ts](src/types.ts).
 
 ### `Doc`
+
 Represents a single document stored in the backend.
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `id` | `number` | Unique identifier. |
-| `course_name` | `string` | Name of the course. |
-| `doc_type` | `DocType` | One of `lecture`, `exercise`, `assignment`, `exam`. |
-| `term` | `Term` | `winter` or `summer`. |
-| `year` | `number` | The starting year of the semester. |
-| `num_pages` | `number` | Page count of the document. |
-| `metadata` | `object` | Contains `tokens` usage info. |
-| `created_at` | `string` | ISO 8601 timestamp. |
-| `chapter_name` | `string \| null` | Name of the chapter (for lectures/exercises). |
-| `label` | `string \| null` | Label/identifier (for assignments). |
+| Field          | Type             | Description                                         |
+| :------------- | :--------------- | :-------------------------------------------------- |
+| `id`           | `number`         | Unique identifier.                                  |
+| `course_name`  | `string`         | Name of the course.                                 |
+| `doc_type`     | `DocType`        | One of `lecture`, `exercise`, `assignment`, `exam`. |
+| `term`         | `Term`           | `winter` or `summer`.                               |
+| `year`         | `number`         | The starting year of the semester.                  |
+| `num_pages`    | `number`         | Page count of the document.                         |
+| `metadata`     | `object`         | Contains `tokens` usage info.                       |
+| `created_at`   | `string`         | ISO 8601 timestamp.                                 |
+| `chapter_name` | `string \| null` | Name of the chapter (for lectures/exercises).       |
+| `label`        | `string \| null` | Label/identifier (for assignments).                 |
 
 ### `IngestPayload`
+
 The payload used for uploading a new document via JSON.
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `course` | `string` | Course name. |
-| `type` | `DocType` | Document type. |
-| `term` | `Term` | `winter` or `summer`. |
-| `year` | `number` | Starting year. |
-| `chapter` | `string` | (Optional) Required for `lecture`/`exercise`. |
-| `label` | `string` | (Optional) Required for `assignment`. |
-| `file` | `string` | Base64-encoded PDF (no data-URI prefix). |
+| Field     | Type      | Description                                   |
+| :-------- | :-------- | :-------------------------------------------- |
+| `course`  | `string`  | Course name.                                  |
+| `type`    | `DocType` | Document type.                                |
+| `term`    | `Term`    | `winter` or `summer`.                         |
+| `year`    | `number`  | Starting year.                                |
+| `chapter` | `string`  | (Optional) Required for `lecture`/`exercise`. |
+| `label`   | `string`  | (Optional) Required for `assignment`.         |
+| `file`    | `string`  | Base64-encoded PDF (no data-URI prefix).      |
 
 ### `SummaryResponse`
+
 Returned after triggering a summary.
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `title` | `string` | Title of the summary. |
-| `timestamp` | `string` | Generation timestamp. |
-| `summary` | `string` | The generated Markdown summary. |
-| `tokens` | `TokenUsage` | Token consumption details. |
+| Field       | Type         | Description                     |
+| :---------- | :----------- | :------------------------------ |
+| `title`     | `string`     | Title of the summary.           |
+| `timestamp` | `string`     | Generation timestamp.           |
+| `summary`   | `string`     | The generated Markdown summary. |
+| `tokens`    | `TokenUsage` | Token consumption details.      |
 
 ### `TokenUsage`
+
 Used for tracking AI model consumption.
 
-| Field | Type |
-| :--- | :--- |
-| `input` | `number` |
-| `output` | `number` |
-| `total` | `number` |
+| Field     | Type                |
+| :-------- | :------------------ |
+| `input`   | `number`            |
+| `output`  | `number`            |
+| `total`   | `number`            |
 | `thought` | `number` (optional) |
