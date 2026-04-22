@@ -23,8 +23,8 @@ export function openSettings(): void {
   const config = { serverUrl: "", token: "" };
   try {
     const saved = getConfig();
-    config.serverUrl = saved.serverUrl;
-    config.token = saved.token;
+    config.serverUrl = saved.serverUrl || "";
+    config.token = saved.token || "";
   } catch {
     /* ignore */
   }
@@ -55,9 +55,9 @@ function injectDialog(): void {
         <input type="url" id="settings-url" class="m3-input" placeholder="https://n8n.example.com" required>
       </div>
       <div class="form-group">
-        <label for="settings-token">Bearer Token</label>
+        <label for="settings-token">Bearer Token (optional)</label>
         <div style="display: flex; gap: 8px;">
-          <input type="password" id="settings-token" class="m3-input" style="flex: 1; min-width: 0;" required>
+          <input type="password" id="settings-token" class="m3-input" style="flex: 1; min-width: 0;">
           <button type="button" class="btn btn--ghost" id="toggle-token" style="width: 72px;">Show</button>
         </div>
       </div>
@@ -98,8 +98,8 @@ function injectDialog(): void {
       modal.querySelector<HTMLInputElement>("#settings-token")!.value;
     const resultEl = modal.querySelector<HTMLElement>("#settings-test-result")!;
 
-    if (!url || !token) {
-      resultEl.textContent = "\u2716 Please fill in both fields.";
+    if (!url) {
+      resultEl.textContent = "\u2716 Please fill in the URL.";
       resultEl.style.color = "var(--md-sys-color-error)";
       return;
     }
@@ -124,8 +124,8 @@ function injectDialog(): void {
     const token =
       modal.querySelector<HTMLInputElement>("#settings-token")!.value;
 
-    if (!serverUrl || !token) {
-      showToast("Please fill in all fields.", "error");
+    if (!serverUrl) {
+      showToast("Please fill in the URL.", "error");
       return;
     }
 

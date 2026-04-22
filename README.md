@@ -9,7 +9,7 @@ It provides a clean interface for uploading, categorising, and tracking lecture 
 - **Categorisation:** Track documents by course, type (Lecture, Assignment, etc.), term, year, and chapter.
 - **Upload:** Easily upload documents with metadata including course name, term, and year.
 - **Summarisation:** Trigger summarisation for lecture notes directly from the dashboard.
-- **Settings:** Configure API connection details (Server URL and Token) with local storage persistence.
+- **Settings:** Configure API connection details (server URL and optional API token) with local storage persistence.
 - **Material Design 3:** Built using MD3 system colors and design principles for a modern look and feel.
 
 ## Project Structure
@@ -75,7 +75,7 @@ The output will be in the `dist/` directory.
 When first launching the app, you will need to configure the connection to your backend:
 
 1. Click the **Settings** (gear) icon in the toolbar.
-2. Enter your **Server URL** and **API Token**.
+2. Enter your **Server URL** and (if required) your **API Token**.
 3. Use the **Test Connection** button to verify the settings.
 4. **Save** the configuration.
 

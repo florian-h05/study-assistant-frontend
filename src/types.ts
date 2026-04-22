@@ -4,7 +4,7 @@ export enum ErrorCodes {
 
 export interface Config {
   serverUrl: string;
-  token: string;
+  token?: string;
 }
 
 export type DocType = "lecture" | "exercise" | "assignment" | "exam";

@@ -27,7 +27,7 @@ async function apiFetch(
   const url = `${serverUrl}/webhook/${path}`;
 
   const headers = new Headers(init.headers);
-  headers.set("Authorization", `Bearer ${token}`);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const res = await fetch(url, { ...init, headers });
 
