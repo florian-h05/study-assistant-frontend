@@ -1,8 +1,8 @@
-import { ingestDoc, fileToBase64 } from "../api";
+import { ingestDoc } from "../api";
 import { showSpinner, hideSpinner } from "../components/spinner";
 import { showToast } from "../components/toast";
 import { Modal } from "../components/modal";
-import type { DocType, Term, IngestPayload } from "../types";
+import type { DocType, Term } from "../types";
 
 let modal: Modal;
 let onSuccessCallback: () => void;
@@ -50,7 +50,10 @@ function injectDialog(): void {
         </div>
         <div class="form-group" style="flex: 1;">
           <label for="year">Year</label>
-          <input type="number" id="year" class="m3-input" required min="2000">
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <input type="number" id="year" class="m3-input" required min="2000" style="flex: 1;">
+            <span id="year-suffix" style="font-weight: 500; font-size: 1.1em; color: var(--md-sys-color-on-surface-variant);"></span>
+          </div>
         </div>
       </div>
 
@@ -93,8 +96,35 @@ function injectDialog(): void {
   // Set default and max year
   const currentYear = new Date().getFullYear();
   const yearInput = modal.querySelector("#year") as HTMLInputElement;
+  const yearSuffix = modal.querySelector("#year-suffix") as HTMLElement;
+  const termSelect = modal.querySelector("#term") as HTMLSelectElement;
+
   yearInput.value = currentYear.toString();
   yearInput.max = currentYear.toString();
+
+  const updateYearHint = () => {
+    const term = termSelect.value;
+    const year = parseInt(yearInput.value);
+
+    if (term === "winter") {
+      yearInput.placeholder = "2025";
+      if (!isNaN(year) && year >= 1000) {
+        yearSuffix.textContent = `/ ${(year + 1).toString().slice(-2)}`;
+        yearSuffix.style.display = "inline";
+      } else {
+        yearSuffix.textContent = "";
+        yearSuffix.style.display = "none";
+      }
+    } else {
+      yearInput.placeholder = "2024";
+      yearSuffix.textContent = "";
+      yearSuffix.style.display = "none";
+    }
+  };
+
+  termSelect.addEventListener("change", updateYearHint);
+  yearInput.addEventListener("input", updateYearHint);
+  updateYearHint();
 
   // Dynamic fields
   docTypeSelect.addEventListener("change", () => {
@@ -190,6 +220,9 @@ function resetForm(): void {
   (modal.querySelector("#year") as HTMLInputElement).value = new Date()
     .getFullYear()
     .toString();
+  (modal.querySelector("#year") as HTMLInputElement).dispatchEvent(
+    new Event("input"),
+  );
 }
 
 async function validateAndSubmit(): Promise<boolean> {

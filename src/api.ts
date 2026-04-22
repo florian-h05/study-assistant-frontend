@@ -57,6 +57,15 @@ export function fileToBase64(file: File): Promise<string> {
   });
 }
 
+/**
+ * Get all documents from the backend.
+ *
+ * Note on Term and Year interpretation:
+ * - Term: "winter" or "summer"
+ * - Year: The starting year of the semester (numeric).
+ *   For Winter terms (e.g., 2025/26), the API receives the start year (2025).
+ *   Formatting (e.g., "Winter 2025/26") is handled by the frontend (see utils.ts).
+ */
 export async function getDocs(config?: Config): Promise<Doc[]> {
   const res = await apiFetch("study-assistant-doc", {}, config);
   return res.json() as Promise<Doc[]>;
