@@ -3,6 +3,7 @@ import { showSpinner, hideSpinner } from "../components/spinner";
 import { showToast } from "../components/toast";
 import { Modal } from "../components/modal";
 import type { DocType, Term } from "../types";
+import { getDefaultTermAndYear } from "../utils";
 
 let modal: Modal;
 let onSuccessCallback: () => void;
@@ -94,12 +95,14 @@ function injectDialog(): void {
   const fileInput = modal.querySelector("#file-input") as HTMLInputElement;
 
   // Set default and max year
+  const { term: defaultTerm, year: defaultYear } = getDefaultTermAndYear();
   const currentYear = new Date().getFullYear();
   const yearInput = modal.querySelector("#year") as HTMLInputElement;
   const yearSuffix = modal.querySelector("#year-suffix") as HTMLElement;
   const termSelect = modal.querySelector("#term") as HTMLSelectElement;
 
-  yearInput.value = currentYear.toString();
+  termSelect.value = defaultTerm;
+  yearInput.value = defaultYear.toString();
   yearInput.max = currentYear.toString();
 
   const updateYearHint = () => {
@@ -217,12 +220,12 @@ function resetForm(): void {
     new Event("change"),
   );
   showFileError("");
-  (modal.querySelector("#year") as HTMLInputElement).value = new Date()
-    .getFullYear()
-    .toString();
-  (modal.querySelector("#year") as HTMLInputElement).dispatchEvent(
-    new Event("input"),
-  );
+
+  const { term: defaultTerm, year: defaultYear } = getDefaultTermAndYear();
+  (modal.querySelector("#term") as HTMLSelectElement).value = defaultTerm;
+  const yearInput = modal.querySelector("#year") as HTMLInputElement;
+  yearInput.value = defaultYear.toString();
+  yearInput.dispatchEvent(new Event("input"));
 }
 
 async function validateAndSubmit(): Promise<boolean> {
